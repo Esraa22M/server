@@ -1,0 +1,30 @@
+{
+  "name": "melo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "description": "server for melo app",
+  "author": {
+    "name": "Esraa Mohamed"
+  },
+  "scripts": {
+    "dev": "tsnd --respawn -r tsconfig-paths/register --pretty --transpile-only ./server/src/index.ts",
+    "build": "tsc && tsc-alias -p tsconfig.json",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^20.0.0",
+    "dotenv": "^17.4.2",
+    "express": "^4.18.0",
+    "mongoose": "^9.5.0",
+    "ts-node-dev": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^8.2.3",
+    "@types/mongoose": "^5.11.97",
+    "tsc-alias": "^1.8.16",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.0.0"
+  }
+}

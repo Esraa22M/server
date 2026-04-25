@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",                /* Modern JS features for current Node.js versions */
+    "module": "CommonJS",              /* Standard for Node.js environments */
+    "outDir": "./dist",                /* Compiled output location */
+    "rootDir": "./server/src", 
+    "paths": {"#/*":["./server/src/*"]},        /* Source code location */
+    "strict": true,                    /* Enables strict typing (best for MongoDB schemas) */
+    "esModuleInterop": true,           /* Required for importing Express and Mongoose */
+    "skipLibCheck": true,              /* Speeds up builds by skipping library type checks */
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true ,
+             /* Allows importing config files as JSON */
+  },
+  "include": ["server/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
