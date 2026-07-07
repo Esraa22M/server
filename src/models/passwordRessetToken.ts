@@ -1,7 +1,7 @@
 import { Model, model, Types, Schema } from 'mongoose';
 import { hash, compare } from 'bcrypt';
 
-interface EmailVerificationTokenDocument {
+interface PasswordResetTokenDocument {
   owner: Types.ObjectId;
   token: string;
   createdAt: Date;
@@ -11,9 +11,9 @@ interface Methods {
   compareToken(token: string): Promise<boolean>;
 }
 
-type EmailVerificationTokenModel = Model<EmailVerificationTokenDocument, {}, Methods>;
+type PasswordResetTokenModel = Model<PasswordResetTokenDocument, {}, Methods>;
 
-const emailVerificationTokenSchema = new Schema<EmailVerificationTokenDocument, EmailVerificationTokenModel, Methods>(
+const passwordResetTokenSchema = new Schema<PasswordResetTokenDocument, PasswordResetTokenModel, Methods>(
   {
     owner: {
       required: true,
@@ -33,18 +33,18 @@ const emailVerificationTokenSchema = new Schema<EmailVerificationTokenDocument, 
   }
 );
 
-emailVerificationTokenSchema.pre('save', async function () {
+passwordResetTokenSchema.pre('save', async function () {
   if (this.isModified('token')) {
     this.token = await hash(this.token, 10);
   }
 });
 
-emailVerificationTokenSchema.methods.compareToken = async function (token) {
+passwordResetTokenSchema.methods.compareToken = async function (token) {
   return await compare(token, this.token);
 };
 
-export default model<EmailVerificationTokenDocument, EmailVerificationTokenModel>(
-  'EmailVerificationToken',
-  emailVerificationTokenSchema
+export default model<PasswordResetTokenDocument, PasswordResetTokenModel>(
+  'PasswordResetToken',
+  passwordResetTokenSchema
 );
 

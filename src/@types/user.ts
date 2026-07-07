@@ -6,3 +6,9 @@ export interface CreateUserRequest extends Request {
         password: string;
     };
 }
+export interface VerifyEmailRequest extends Request {
+    body: {
+        token: string;
+        userId: string;
+    };
+}
