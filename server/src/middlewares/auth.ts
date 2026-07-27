@@ -1,8 +1,15 @@
 import { RequestHandler } from 'express';
 import { isValidObjectId } from 'mongoose';
 import PasswordResetToken from '#/models/passwordRessetToken';
+import { JwtPayload, verify } from 'jsonwebtoken';
+import { JWT_SECRET } from '#/utils/variables';
+import User from '#/models/users';
 
-export const isValidPasswordResetToken: RequestHandler = async (req, res, next) => {
+export const isValidPasswordResetToken: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
   try {
     const { token, userId } = req.body;
 
@@ -14,7 +21,9 @@ export const isValidPasswordResetToken: RequestHandler = async (req, res, next) 
       return res.status(400).json({ message: 'Invalid user ID' });
     }
 
-    const passwordResetToken = await PasswordResetToken.findOne({ owner: userId });
+    const passwordResetToken = await PasswordResetToken.findOne({
+      owner: userId,
+    });
     if (!passwordResetToken) {
       return res.status(403).json({ message: 'Invalid or expired token' });
     }
@@ -28,5 +37,48 @@ export const isValidPasswordResetToken: RequestHandler = async (req, res, next) 
   } catch (error) {
     console.error('TOKEN VALIDATION ERROR:', error);
     return res.status(500).json({ message: 'Something went wrong' });
+  }
+};
+
+export const mustAuth: RequestHandler = async (req, res, next) => {
+  try {
+    const authorization = String(req.headers.authorization || '');
+
+    const token = authorization
+      .trim()
+      .match(/^Bearer\s+(.+)$/i)?.[1]
+      ?.trim();
+
+    if (!token || token === 'undefined' || token === 'null') {
+      return res
+        .status(403)
+        .json({ error: 'Unauthorized request! Invalid token format' });
+    }
+
+    const payload = verify(token, JWT_SECRET as string);
+    console.log(payload);
+
+    if (!payload || typeof payload !== 'object' || !('userId' in payload)) {
+      return res.status(403).json({ error: 'Invalid token payload!' });
+    }
+
+    const id = String((payload as JwtPayload).userId);
+    if (!id) return res.status(403).json({ error: 'Invalid token payload!' });
+
+    const user = await User.findOne({ _id: id, tokens: token });
+    if (!user) return res.status(403).json({ error: 'Unauthorized request!' });
+    req.user = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      verified: user.verified,
+      avatar: user.avatar?.url,
+      followers: user.followers.length,
+      followings: user.following.length,
+    };
+    next();
+  } catch (error) {
+    console.error('JWT Verification Error:', error);
+    return res.status(403).json({ error: 'Invalid or expired token!' });
   }
 };

@@ -10,3 +10,4 @@ export const MAIL_TRAP_PASS = process.env.MAIL_TRAP_PASS!;
 export const VERIFY_EMAIL = process.env.VERIFY_EMAIL!;
 export const PASSWORD_RESET_LINK = process.env.PASSWORD_RESET_LINK!;
 export const SIGN_IN_URL = process.env.SIGN_IN_URL!;
+export const JWT_SECRET= process.env.JWT_SECRET;

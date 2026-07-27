@@ -42,7 +42,7 @@ export const updatePasswordSchema = yup.object().shape({
     .test('is-valid-object-id', 'Invalid userId', (value) =>
       isValidObjectId(value)
     ),
-     password: yup
+  password: yup
     .string()
     .min(8, 'Password must be at least 8 characters')
     .required('Password is required')
@@ -52,3 +52,13 @@ export const updatePasswordSchema = yup.object().shape({
       'Password must contain at least one letter and one number'
     ),
 });
+
+export const SignInValiadtionSchema = yup
+  .object()
+  .shape({
+    email: yup
+      .string()
+      .email('Invalid email address')
+      .required('Email is required'),
+    password: yup.string().trim().required('Password is missing!'),
+  });

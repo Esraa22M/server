@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
 import { CreateUserRequest, VerifyEmailRequest } from '#/@types/user';
+import jwt from 'jsonwebtoken';
 import User from '#/models/users';
 import { generateToken } from '#/utils/helper';
 import {
@@ -11,7 +12,7 @@ import emailVerificationToken from '#/models/emailVerificationToken';
 import { isValidObjectId } from 'mongoose';
 import PasswordResetToken from '#/models/passwordRessetToken';
 import crypto from 'crypto';
-import { PASSWORD_RESET_LINK } from '#/utils/variables';
+import { JWT_SECRET, PASSWORD_RESET_LINK } from '#/utils/variables';
 // 1. إنشاء مستخدم جديد وإرسال التوكن
 export const create: RequestHandler = async (req: CreateUserRequest, res) => {
   try {
@@ -165,4 +166,31 @@ export const updatePassword: RequestHandler = async (req, res) => {
   await PasswordResetToken.findOneAndDelete({ owner: userId });
   sendPasswordResetSuccessEmail(user.name, user.email);
   res.status(200).json({ message: 'Password updated successfully' });
+};
+export const SignIn: RequestHandler = async (req, res) => {
+  const { password, email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user)
+    return res.json(403).json({ error: 'Email or password does not match!' });
+  // compare the password
+  const matched = await user.comparePassword(password);
+  if (!matched)
+    return res.json(403).json({ error: 'Email or password does not match!' });
+  // generate the token
+  const token = jwt.sign({ userId: user?.id || '' }, JWT_SECRET!);
+  user.tokens.push(token);
+  await user.save();
+  res.json({
+    profile: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      verified: user.verified,
+      avatar: user.avatar?.url,
+      followers: user.followers.length,
+      followings:user.following.length,
+      
+    },
+    token
+  });
 };
