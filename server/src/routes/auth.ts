@@ -16,9 +16,12 @@ import {
   updatePassword,
   SignIn,
 } from '#/controllers/user';
+import path from 'path';
+import fs from 'fs';
 import { isValidPasswordResetToken, mustAuth } from '#/middlewares/auth';
-import { JWT_SECRET } from '#/utils/variables';
-import { verify, JwtPayload } from 'jsonwebtoken';
+import formidable from 'formidable';
+import { error } from 'console';
+import { fileParser, RequestWithFiles } from '#/middlewares/fileParser';
 const authRoutes = Router();
 authRoutes.post('/create', validateRequest(CreateUserSchema), create);
 authRoutes.post(
@@ -41,20 +44,20 @@ authRoutes.post(
   updatePassword
 );
 authRoutes.post('/sign-in', validateRequest(SignInValiadtionSchema), SignIn);
-authRoutes.get('/is-auth',mustAuth, async (req, res) => {
+authRoutes.get('/is-auth', mustAuth, async (req, res) => {
   try {
     res.json({
-      profile: req.user
+      profile: req.user,
     });
   } catch (error) {
     console.error('JWT Verification Error:', error);
     return res.status(403).json({ error: 'Invalid or expired token!' });
   }
 });
-authRoutes.get('/is-auth',mustAuth, async (req, res) => {
+authRoutes.get('/is-auth', mustAuth, async (req, res) => {
   try {
     res.json({
-      profile: req.user
+      profile: req.user,
     });
   } catch (error) {
     console.error('JWT Verification Error:', error);
@@ -64,21 +67,26 @@ authRoutes.get('/is-auth',mustAuth, async (req, res) => {
 authRoutes.get('/public', async (req, res) => {
   try {
     res.json({
-      message: "you are in public route"
+      message: 'you are in public route',
     });
   } catch (error) {
     console.error('JWT Verification Error:', error);
     return res.status(403).json({ error: 'Invalid or expired token!' });
   }
 });
-authRoutes.get('/private',mustAuth, async (req, res) => {
+authRoutes.get('/private', mustAuth, async (req, res) => {
   try {
     res.json({
-      message:"you are in private route"
+      message: 'you are in private route',
     });
   } catch (error) {
     console.error('JWT Verification Error:', error);
     return res.status(403).json({ error: 'Invalid or expired token!' });
   }
+});
+
+authRoutes.post('/update-profile', fileParser, (req : RequestWithFiles, res)=>{
+  console.log(req.files);
+  res.json({ok:true})
 });
 export default authRoutes;
