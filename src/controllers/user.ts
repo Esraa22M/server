@@ -13,6 +13,9 @@ import { isValidObjectId } from 'mongoose';
 import PasswordResetToken from '#/models/passwordRessetToken';
 import crypto from 'crypto';
 import { JWT_SECRET, PASSWORD_RESET_LINK } from '#/utils/variables';
+import { RequestWithFiles } from '#/middlewares/fileParser';
+import cloudinary from '#/cloud';
+import * as formidable from 'formidable';
 // 1. إنشاء مستخدم جديد وإرسال التوكن
 export const create: RequestHandler = async (req: CreateUserRequest, res) => {
   try {
@@ -188,9 +191,37 @@ export const SignIn: RequestHandler = async (req, res) => {
       verified: user.verified,
       avatar: user.avatar?.url,
       followers: user.followers.length,
-      followings:user.following.length,
-      
+      followings: user.following.length,
     },
-    token
+    token,
   });
+};
+export const updateProfile: RequestHandler = async (
+  req: RequestWithFiles,
+  res
+) => {
+  const { name } = req.body;
+  const avatar = req.files?.avatar as formidable.File | undefined;
+  const user = await User?.findById(req.user.id);
+  if (!user) throw new Error('Some thing went wrong! user not found');
+  if (typeof name !== 'string')
+    return res.status(422).json({ error: 'Invalid name' });
+  if (name.trim().length < 3) {
+    return res.status(422).json({ error: 'Invalid name' });
+  }
+  user.name = name;
+  if (avatar) {
+    const { secure_url, public_id } = await cloudinary.uploader.upload(
+      avatar.filepath,
+      {
+        width: 300,
+        height: 300,
+        crop: 'thumb',
+        gravity: 'face',
+      }
+    );
+    user.avatar = {url:secure_url, publicId:public_id}
+  }
+  await user.save();
+  res.json({avatar : user?.avatar})
 };

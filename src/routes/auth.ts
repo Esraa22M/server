@@ -15,6 +15,7 @@ import {
   grantValid,
   updatePassword,
   SignIn,
+  updateProfile,
 } from '#/controllers/user';
 import path from 'path';
 import fs from 'fs';
@@ -85,8 +86,5 @@ authRoutes.get('/private', mustAuth, async (req, res) => {
   }
 });
 
-authRoutes.post('/update-profile', fileParser, (req : RequestWithFiles, res)=>{
-  console.log(req.files);
-  res.json({ok:true})
-});
+authRoutes.post('/update-profile',mustAuth ,fileParser, updateProfile);
 export default authRoutes;
