@@ -11,3 +11,6 @@ export const VERIFY_EMAIL = process.env.VERIFY_EMAIL!;
 export const PASSWORD_RESET_LINK = process.env.PASSWORD_RESET_LINK!;
 export const SIGN_IN_URL = process.env.SIGN_IN_URL!;
 export const JWT_SECRET= process.env.JWT_SECRET;
+export const CLOUD_NAME = process.env.CLOUD_NAME;
+export const CLOUD_KEY= process.env.CLOUD_KEY;
+export const CLOUD_SECRET=process.env.CLOUD_SECRET;
