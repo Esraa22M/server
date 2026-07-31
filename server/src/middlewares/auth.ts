@@ -43,11 +43,14 @@ export const isValidPasswordResetToken: RequestHandler = async (
 export const mustAuth: RequestHandler = async (req, res, next) => {
   try {
     const authorization = String(req.headers.authorization || '');
-
-    const token = authorization
+    const headerToken = authorization
       .trim()
       .match(/^Bearer\s+(.+)$/i)?.[1]
       ?.trim();
+    const queryToken =
+      typeof req.query?.token === 'string' ? req.query.token.trim() : '';
+
+    const token = headerToken || queryToken;
 
     if (!token || token === 'undefined' || token === 'null') {
       return res
@@ -76,6 +79,7 @@ export const mustAuth: RequestHandler = async (req, res, next) => {
       followers: user.followers.length,
       followings: user.following.length,
     };
+    req.token = token
     next();
   } catch (error) {
     console.error('JWT Verification Error:', error);

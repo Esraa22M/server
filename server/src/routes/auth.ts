@@ -16,7 +16,9 @@ import {
   updatePassword,
   SignIn,
   updateProfile,
-} from '#/controllers/user';
+  sendProfile,
+  logOut,
+} from '#/controllers/auth';
 import path from 'path';
 import fs from 'fs';
 import { isValidPasswordResetToken, mustAuth } from '#/middlewares/auth';
@@ -55,16 +57,8 @@ authRoutes.get('/is-auth', mustAuth, async (req, res) => {
     return res.status(403).json({ error: 'Invalid or expired token!' });
   }
 });
-authRoutes.get('/is-auth', mustAuth, async (req, res) => {
-  try {
-    res.json({
-      profile: req.user,
-    });
-  } catch (error) {
-    console.error('JWT Verification Error:', error);
-    return res.status(403).json({ error: 'Invalid or expired token!' });
-  }
-});
+authRoutes.get('/is-auth', mustAuth, sendProfile)
+
 authRoutes.get('/public', async (req, res) => {
   try {
     res.json({
@@ -88,3 +82,5 @@ authRoutes.get('/private', mustAuth, async (req, res) => {
 
 authRoutes.post('/update-profile',mustAuth ,fileParser, updateProfile);
 export default authRoutes;
+
+authRoutes.post("/logout" , mustAuth , logOut)
