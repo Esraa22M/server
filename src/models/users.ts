@@ -1,9 +1,10 @@
 import { compare, hash } from "bcrypt";
-import { Model, model, Types , Schema } from "mongoose";
+import { Model, model, Types , Schema, ObjectId } from "mongoose";
 interface Methods{
     comparePassword(password: string): Promise<boolean>;
 }
-interface UserDocument {
+export interface UserDocument {
+    id:ObjectId;
     name: string;
     email: string;
     password: string;
