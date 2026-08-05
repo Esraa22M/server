@@ -1,5 +1,6 @@
 import { isValidObjectId } from 'mongoose';
 import * as yup from 'yup';
+import { categories } from './media_category';
 export const CreateUserSchema = yup.object().shape({
   email: yup
     .string()
@@ -61,4 +62,19 @@ export const SignInValiadtionSchema = yup
       .email('Invalid email address')
       .required('Email is required'),
     password: yup.string().trim().required('Password is missing!'),
+  });
+
+  export const mediaValidationSchema = yup
+  .object()
+  .shape({
+    title: yup
+      .string()
+      .required('Title is missing!'),
+    about: yup
+      .string()
+      .required('About is missing!'),
+    category: yup
+      .string()
+      .oneOf(categories, "Invalid category")
+      .required('Category is missing!'),
   });

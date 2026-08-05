@@ -1,4 +1,6 @@
 import { Request } from "express";
+import { Types } from 'mongoose';
+
 export interface CreateUserRequest extends Request {
     body: {
         name: string;
@@ -16,7 +18,7 @@ declare global {
   namespace Express {
     interface Request {
       user: {
-        id: any;
+        id: Types.ObjectId | string;
         name: string;
         email: string;
         verified: boolean;
