@@ -86,3 +86,10 @@ export const mustAuth: RequestHandler = async (req, res, next) => {
     return res.status(403).json({ error: 'Invalid or expired token!' });
   }
 };
+
+export const isVerified:RequestHandler = async (req, res, next) => {
+  if(!req.user?.verified){
+    return res.status(403).json({error:"Please verify your email to access this resource!"})
+  }
+  next();
+}

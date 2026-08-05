@@ -12,7 +12,9 @@ export const fileParser: RequestHandler = async (
   if (!req.headers['content-type']?.startsWith('multipart/form-data')) {
     return res.status(422).json({ error: 'only accept form-data!' });
   }
-  const form = formidable({ multiples: false });
+  const form = formidable({ multiples: false, maxFileSize: 1024 * 1024 * 1024, // 1 GB
+  maxTotalFileSize: 1024 * 1024 * 1024, // 1 GB
+  keepExtensions: true,});
   const [fields, files] = await form.parse(req);
   console.log('fields : ', fields);
   console.log('files : ', files);
