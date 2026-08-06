@@ -1,10 +1,11 @@
 import { ObjectId, Schema, model, models } from 'mongoose';
 import { categories, categoriesTypes } from '../utils/media_category';
 
-export interface MediaDocument {
+export interface MediaDocument<T = ObjectId> {
+  id: ObjectId;
   title: string;
   about: string;
-  Owner: ObjectId;
+  Owner: T;
   file: { url: string; publicId: string };
   poster?: { url: string; publicId: string };
   likes: ObjectId[];
